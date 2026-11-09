@@ -17,4 +17,4 @@ Nemotron-*/
 
 # OS / IDE
 .DS_Store
-.cursor/
+artifacts/
