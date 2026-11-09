@@ -1,24 +1,36 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
 name = "ternary-nemo"
 version = "0.1.0"
-description = "Memory-bounded streaming ternary (1.58-bit / 2-bit) quantization pipeline for NVIDIA-Nemotron-3.5-Lightning-30B-A3B on Apple Silicon MLX"
+description = "Memory-bounded streaming ternary (1.58-bit in 2-bit MLX) quantizer for NVIDIA-Nemotron-3.5-Lightning-30B-A3B-bf16 on Apple Silicon"
 readme = "README.md"
 requires-python = ">=3.11"
+license = { text = "Apache-2.0" }
 dependencies = [
     "mlx>=0.25.0",
     "mlx-lm>=0.31.3",
     "huggingface-hub[hf_xet]>=0.30.0",
     "safetensors>=0.4.5",
     "tqdm>=4.66.0",
+    "numpy>=1.26.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
 ]
 
 [project.scripts]
-quantize-ternary = "ternary_nemo.quantize:main"
-verify-ternary = "ternary_nemo.verify:main"
-
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+ternary-quantize = "ternary_nemo.cli:main_quantize"
+ternary-verify = "ternary_nemo.cli:main_verify"
+ternary-publish = "ternary_nemo.cli:main_publish"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/ternary_nemo"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

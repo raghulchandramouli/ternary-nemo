@@ -1,0 +1,69 @@
+---
+library_name: mlx
+base_model:
+  - nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16
+  - mlx-community/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-bf16
+tags:
+  - mlx
+  - ternary
+  - 1.58-bit
+  - 2-bit
+  - moe
+  - nemotron
+  - mamba2
+  - apple-silicon
+pipeline_tag: text-generation
+license: other
+license_name: nvidia-open-model-license
+license_link: https://www.nvidia.com/en-us/agreements/enterprise-software/nvidia-open-model-license/
+---
+
+# {{ repo_id }}
+
+This model is a **Ternary (`{-γ, 0, +γ}` packed in 2-bit MLX)** mixed-precision quantization of [`nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16`](https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16) (converted from [`mlx-community/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-bf16`](https://huggingface.co/mlx-community/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-bf16)) for Apple Silicon using [`ternary-nemo`](https://github.com/raghulchandramouli/ternary-nemo).
+
+## Highlights
+
+- **6.6x Smaller Footprint**: Compressed from **63.16 GB (`bfloat16`)** down to **~{{ total_output_gb }} GB**, running comfortably inside 16 GB+ Unified Memory Macs.
+- **Strict Symmetric Ternary Experts (`{-γ, 0, +γ}`)**: All 23 Mixture-of-Experts layers (`128` routed experts per layer, **29.37B parameters / 93.0% of the model**) are projected onto per-group symmetric ternary states `{-γ, 0, +γ}` (`group_size={{ group_size }}`, mode=`{{ mode }}`) and packed into MLX's hardware-accelerated `bits=2` `QuantizedSwitchLinear` format (`scale = γ`, `bias = -γ`, `q ∈ {0, 1, 2}`).
+- **Protected State-Space & Routing Backbone**:
+  - **Mamba-2 `in_proj`/`out_proj`, GQA Attention `q/k/v/o_proj`, Shared Experts, Embeddings, and `lm_head`** (~2.13B params): **4-bit affine (`group_size={{ group_size }}`)**.
+  - **MoE Router Gates (`gate.weight`, `e_score_correction_bias`), Mamba-2 `conv1d`, `A_log`, `D`, `dt_bias`, and RMSNorms**: Kept in native **`bfloat16` / `float32`**.
+
+## Quickstart with `mlx-lm`
+
+No custom kernels or forks are required—this checkpoint runs directly with standard `mlx-lm`:
+
+```bash
+pip install -U mlx-lm
+```
+
+```python
+from mlx_lm import load, generate
+
+model, tokenizer = load("{{ repo_id }}")
+
+prompt = "Explain why Mixture-of-Experts models are ideal for ternary quantization."
+if tokenizer.chat_template is not None:
+    messages = [{"role": "user", "content": prompt}]
+    prompt = tokenizer.apply_chat_template(
+        messages, add_generation_prompt=True, tokenize=False
+    )
+
+response = generate(model, tokenizer, prompt=prompt, max_tokens=256, verbose=True)
+print(response)
+```
+
+## Quantization Breakdown
+
+| Subsystem | Parameters | Precision | Group Size |
+| :--- | :---: | :---: | :---: |
+| Routed MoE Experts (`*.mixer.switch_mlp.fc1`, `fc2`) | 29.37 B (93.0%) | **Ternary `{-γ, 0, +γ}` (2-bit MLX)** | {{ group_size }} |
+| Shared Experts + Mamba-2 & Attention Projections | 1.43 B (4.5%) | **4-bit MLX** | {{ group_size }} |
+| Token Embeddings + `lm_head` | 0.70 B (2.2%) | **4-bit MLX** | {{ group_size }} |
+| MoE Routers, SSM States (`A_log`, `D`, `dt_bias`), `conv1d`, Norms | 0.08 B (0.3%) | **`bfloat16` / `float32`** | — |
+| **Total** | **31.58 B** | **~{{ total_output_gb }} GB total** | — |
+
+## License & Attribution
+
+This checkpoint is a derivative quantized work of [`nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16`](https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16) and is governed by the [NVIDIA Open Model License](https://www.nvidia.com/en-us/agreements/enterprise-software/nvidia-open-model-license/).

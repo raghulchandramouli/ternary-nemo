@@ -1,20 +1,27 @@
-# Python / uv
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
-*.egg-info/
+
+# Virtual environments
 .venv/
 venv/
-dist/
-build/
+ENV/
 
-# Model checkpoints & safetensors shards
-*.safetensors
-checkpoints/
+# Build / packaging
+build/
+dist/
+*.egg-info/
+.pytest_cache/
+
+# Local model artifacts and Hugging Face cache
+artifacts/
 models/
+checkpoints/
 output/
 Nemotron-*/
+*.safetensors
+.hf_cache/
 
-# OS / IDE
+# OS / Editor
 .DS_Store
-artifacts/

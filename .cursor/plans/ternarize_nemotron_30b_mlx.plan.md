@@ -4,7 +4,7 @@ overview: A memory-bounded streaming pipeline to ternarize/2-bit quantize mlx-co
 todos:
   - id: setup-env
     content: Initialize uv project and install mlx-lm >= 0.31.3, huggingface_hub, and safetensors
-    status: pending
+    status: completed
   - id: build-quantizer
     content: Implement streaming ternary-in-2bit quantizer (ternary_kernel.py, streamer.py, config.py) with per-group {-gamma, 0, +gamma} projection and mixed-precision config generator
     status: pending

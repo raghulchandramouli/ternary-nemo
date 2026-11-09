@@ -4,13 +4,13 @@ overview: A memory-bounded streaming pipeline to ternarize/2-bit quantize mlx-co
 todos:
   - id: setup-env
     content: Initialize uv project and install mlx-lm >= 0.31.3, huggingface_hub, and safetensors
-    status: pending
+    status: completed
   - id: build-quantizer
     content: Implement streaming ternary-in-2bit quantizer (ternary_kernel.py, streamer.py, config.py) with per-group {-gamma, 0, +gamma} projection and mixed-precision config generator
-    status: pending
+    status: completed
   - id: test-synthetic
     content: Unit-test the ternary quantizer on a synthetic NemotronH MoE layer to verify mlx_lm.load compatibility and strict 3-value ternary states
-    status: pending
+    status: completed
   - id: run-quantization
     content: Run streaming download and quantization across the 13 shards of mlx-community/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-bf16 while keeping RAM < 10GB
     status: pending
