@@ -36,11 +36,13 @@ Target Output: ~9.4 GB Native MLX Ternary-in-2-Bit Mixed-Precision Checkpoint
 
 ## Phase 5: Memory-Bounded Streaming Conversion (`src/ternary_nemo/streamer.py` & `scripts/quantize.py`)
 - [x] Implement `stream_quantize_model()` and `scripts/quantize.py` CLI
-- [ ] Run streaming conversion across `model-00001-of-00013.safetensors` to `model-00013-of-00013.safetensors`
+- [x] Run streaming conversion across `model-00001-of-00013.safetensors` to `model-00013-of-00013.safetensors` (Completed in 57.5s: 9.71 GB output across 3 shards, 9.50 GB peak MLX RAM)
 
-## Phase 6: Local Verification & Benchmarking (`src/ternary_nemo/verifier.py` & `scripts/verify.py`)
+## Phase 6: Local Verification & Benchmarking (`src/ternary_nemo/verifier.py`, `src/ternary_nemo/benchmarks.py`, `scripts/verify.py`, `scripts/benchmark.py`)
 - [x] Implement `inspect_checkpoint_ternary_weights()`, `benchmark_mlx_inference()`, and `scripts/verify.py` CLI
-- [ ] Verify full 30B quantized checkpoint on disk (~9.4 GB) and benchmark tok/s with `mlx_lm.generate`
+- [x] Verify full 30B quantized checkpoint on disk (9.71 GB, strict 3-state ternary verified, 110.1 tok/s generation at 10.54 GB peak RAM)
+- [x] Upgrade `src/ternary_nemo/benchmarks.py` with local Parquet caching (`models/benchmarks/`), deterministic 14-category stratified sampling, `mlx_lm.batch_generate` (`batch_size=8`), truncation recovery, and per-batch resume checkpointing
+- [x] Run official Nemotron-3.5-Lightning benchmarks (`MMLU-Pro`, `GPQA-Diamond`, `GSM8K`) against NVIDIA's BF16 reference scores
 
 ## Phase 7: Hugging Face Hub Publication (`src/ternary_nemo/hub.py` & `scripts/publish.py`)
 - [x] Create `templates/MODEL_CARD.md.j2`, `src/ternary_nemo/hub.py`, and `scripts/publish.py` CLI

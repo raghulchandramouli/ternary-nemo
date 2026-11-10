@@ -16,6 +16,7 @@ dependencies = [
     "safetensors>=0.4.5",
     "tqdm>=4.66.0",
     "numpy>=1.26.0",
+    "pyarrow>=18.0.0",
 ]
 
 [project.optional-dependencies]
@@ -26,7 +27,12 @@ dev = [
 [project.scripts]
 ternary-quantize = "ternary_nemo.cli:main_quantize"
 ternary-verify = "ternary_nemo.cli:main_verify"
+ternary-benchmark = "ternary_nemo.cli:main_benchmark"
 ternary-publish = "ternary_nemo.cli:main_publish"
+quantize-ternary = "ternary_nemo.cli:main_quantize"
+verify-ternary = "ternary_nemo.cli:main_verify"
+benchmark-ternary = "ternary_nemo.cli:main_benchmark"
+publish-ternary = "ternary_nemo.cli:main_publish"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/ternary_nemo"]

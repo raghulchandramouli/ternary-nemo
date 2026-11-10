@@ -25,3 +25,5 @@ Nemotron-*/
 
 # OS / Editor
 .DS_Store
+.env
+.env.*
